@@ -1,0 +1,156 @@
+{
+  "name": "Junzheng Jia",
+  "email": "junzhenj@uw.edu",
+  "phone": "(206) 561-7126",
+  "location": "Seattle, WA",
+  "linkedin": "linkedin.com/in/Junzheng-jia",
+  "visa_status": "US Permanent Resident",
+  "education": [
+    {
+      "school": "University of Washington",
+      "location": "Seattle, WA",
+      "degree": "BS (in progress)",
+      "major": "Engineering Undeclared, intended for ECE or ME",
+      "gpa": 3.74,
+      "graduation": "July 2028",
+      "honors": ["Husky Robotics Outstanding Member Award"]
+    },
+    {
+      "school": "Beijing No.101 High School",
+      "location": "Beijing, China",
+      "degree": "High School",
+      "major": null,
+      "gpa": 4.0,
+      "graduation": "2025",
+      "honors": [
+        "ISEF (International Science & Engineering Fair) Finalist & China National Team Member, 2024 (selected from 1M+ teens)",
+        "AMC 12: 112.5",
+        "National Science Talent Program — Top 10% (2023)",
+        "School Honor Roll — Top 5%",
+        "1st Place Freshman Debate Competition (2022-23)"
+      ]
+    }
+  ],
+  "experience": [
+    {
+      "title": "Arm Team Member",
+      "organization": "Husky Robotics (University of Washington)",
+      "location": "Seattle, WA",
+      "start": "Oct 2025",
+      "end": "Present",
+      "bullets": [
+        "Working with seniors and graduate students to learn SolidWorks and MATLAB",
+        "Developing mechanical arm for the University Rover Challenge"
+      ],
+      "tags": ["robotics", "mechanical", "team", "current"]
+    },
+    {
+      "title": "Vine-mimic Robotic Arm Inventor",
+      "organization": "University of Chinese Academy of Sciences (UCAS)",
+      "location": "Beijing, China",
+      "start": "Jun 2022",
+      "end": "Jul 2024",
+      "bullets": [
+        "Designed and built a vine-mimic soft-rigid hybrid robot to pick apples",
+        "Studied vine structure and degrees of freedom; performed mechanical modeling in MATLAB",
+        "Developed with MATLAB, SolidWorks, and Arduino",
+        "Showcased at ISEF 2024 Global"
+      ],
+      "tags": ["robotics", "research", "award", "matlab", "solidworks", "arduino"]
+    },
+    {
+      "title": "National Science Talent Program Researcher",
+      "organization": "University of Chinese Academy of Sciences (UCAS)",
+      "location": "Beijing, China",
+      "start": "Jun 2023",
+      "end": "Jul 2025",
+      "bullets": [
+        "Learned college-level physics, calculus, linear algebra, MATLAB, SolidWorks",
+        "Collaborated with a professor on vine-mimic robot invention"
+      ],
+      "tags": ["research", "foundations"]
+    },
+    {
+      "title": "Rehabilitation Equipment Developer",
+      "organization": "Independent Project",
+      "location": null,
+      "start": null,
+      "end": null,
+      "bullets": [
+        "Used Java to build a small game and integrated it with limb therapeutic devices",
+        "Deployed to 6 patients in local communities"
+      ],
+      "tags": ["java", "embedded", "healthcare", "project"]
+    },
+    {
+      "title": "Online Game Account Shop Operator",
+      "organization": "Self-employed",
+      "location": null,
+      "start": "Jun 2022",
+      "end": "Present",
+      "bullets": [
+        "Explored game markets and supply-demand relationships",
+        "Resold game accounts (earned ~7,000 CNY)"
+      ],
+      "tags": ["business", "side-hustle"]
+    },
+    {
+      "title": "Founder, Go Club & Inter-school Go Association",
+      "organization": "Beijing No.101 High School",
+      "location": "Beijing, China",
+      "start": null,
+      "end": null,
+      "bullets": [
+        "Held weekly club activities (20+ participants)",
+        "Organized 6 inter-school matches; engaged 100+ Go players"
+      ],
+      "tags": ["leadership", "community"]
+    },
+    {
+      "title": "Debate Coach",
+      "organization": "Beijing No.101 High School",
+      "location": "Beijing, China",
+      "start": "Sep 2024",
+      "end": "Jul 2025",
+      "bullets": [
+        "Guided 10+ first-year students in scheduling and research projects",
+        "Provided emotional and academic support"
+      ],
+      "tags": ["mentorship", "teaching"]
+    },
+    {
+      "title": "Online Teaching Assistant (AP Courses)",
+      "organization": "Remote — serving Seattle-based students",
+      "location": "Seattle, WA",
+      "start": "Sep 2025",
+      "end": "Present",
+      "bullets": [
+        "Assist teacher in instructing high school AP courses",
+        "Grade homework; work-study to cover tuition and living expenses"
+      ],
+      "tags": ["teaching", "work-study"]
+    }
+  ],
+  "skills": {
+    "programming_languages": ["C", "C++", "Java", "MATLAB"],
+    "modeling_and_tools": ["SolidWorks", "Arduino", "GPT-SoVITS"],
+    "engineering_foundations": [
+      "College-level physics",
+      "Calculus",
+      "Linear algebra",
+      "Mechanical modeling"
+    ],
+    "soft_skills": [
+      "Leadership (club founder, debate coach)",
+      "Teaching / mentoring",
+      "Research collaboration (with professors)"
+    ]
+  },
+  "target_roles": [
+    "Electrical engineering intern",
+    "Mechanical / mechatronics intern",
+    "Robotics intern",
+    "Hardware intern (entry-level / freshman-friendly)"
+  ],
+  "notes": "UW freshman year 2025-2026 (rising sophomore by Summer 2026). Strong robotics project portfolio (ISEF Finalist). US Permanent Resident — eligible for all export-controlled roles. Gaps vs. most ECE intern postings in the Seattle batch: (1) no Python listed, (2) no PCB / circuit design experience, (3) no prior industry internship, (4) early year-in-school — most postings prefer junior/senior."
+}

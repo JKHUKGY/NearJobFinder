@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import argparse
 import asyncio
+import json
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -16,10 +17,15 @@ from reportlab.lib import colors
 from reportlab.lib.pagesizes import letter
 from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
 from reportlab.lib.units import inch
+from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase.cidfonts import UnicodeCIDFont
 from reportlab.platypus import Paragraph, SimpleDocTemplate, Spacer
 
 from backend.services.aggregator import JobAggregator
 from backend.services.job_apis import Job, SearchQuery
+
+CJK_FONT = "STSong-Light"
+pdfmetrics.registerFont(UnicodeCIDFont(CJK_FONT))
 
 
 async def gather_jobs(
@@ -71,7 +77,13 @@ def format_salary(lo: float | None, hi: float | None, ccy: str | None) -> str:
     return ""
 
 
-def build_pdf(jobs: list[Job], output_path: Path, title: str) -> None:
+def build_pdf(
+    jobs: list[Job],
+    output_path: Path,
+    title: str,
+    summary_md: str | None = None,
+    descriptions: dict[str, str] | None = None,
+) -> None:
     doc = SimpleDocTemplate(
         str(output_path),
         pagesize=letter,
@@ -90,6 +102,14 @@ def build_pdf(jobs: list[Job], output_path: Path, title: str) -> None:
         spaceAfter=2,
         textColor=colors.HexColor("#1a1a1a"),
     )
+    summary_h = ParagraphStyle(
+        "SummaryH", parent=styles["Heading2"], fontSize=14,
+        spaceBefore=4, spaceAfter=6, textColor=colors.HexColor("#1a1a1a"),
+    )
+    summary_body = ParagraphStyle(
+        "SummaryBody", parent=styles["Normal"], fontSize=10,
+        leading=14, spaceAfter=4, textColor=colors.HexColor("#222"),
+    )
     meta = ParagraphStyle(
         "Meta",
         parent=styles["Normal"],
@@ -102,10 +122,31 @@ def build_pdf(jobs: list[Job], output_path: Path, title: str) -> None:
         parent=styles["Normal"],
         fontSize=9,
         textColor=colors.HexColor("#0066cc"),
-        spaceAfter=10,
+        spaceAfter=4,
+    )
+    desc = ParagraphStyle(
+        "Desc",
+        parent=styles["Normal"],
+        fontName=CJK_FONT,
+        fontSize=10,
+        leading=14,
+        textColor=colors.HexColor("#333"),
+        spaceAfter=12,
+        leftIndent=10,
     )
 
     story = [Paragraph(esc(title), title_style)]
+    if summary_md:
+        for block in summary_md.strip().split("\n\n"):
+            block = block.strip()
+            if not block:
+                continue
+            if block.startswith("# "):
+                story.append(Paragraph(esc(block[2:]), summary_h))
+            else:
+                html = block.replace("\n", "<br/>")
+                story.append(Paragraph(html, summary_body))
+        story.append(Spacer(1, 12))
     for i, job in enumerate(jobs, 1):
         story.append(Paragraph(f"{i}. {esc(job.title)}", h2))
 
@@ -126,7 +167,15 @@ def build_pdf(jobs: list[Job], output_path: Path, title: str) -> None:
             story.append(
                 Paragraph(f'<link href="{esc(job.url)}">{esc(job.url)}</link>', link)
             )
-        else:
+
+        if descriptions:
+            key = f"{job.source}:{job.source_id}"
+            body = descriptions.get(key)
+            if body:
+                story.append(Paragraph(body, desc))
+            else:
+                story.append(Spacer(1, 6))
+        elif not job.url:
             story.append(Spacer(1, 6))
 
     doc.build(story)
@@ -135,8 +184,9 @@ def build_pdf(jobs: list[Job], output_path: Path, title: str) -> None:
 def main() -> None:
     load_dotenv()
     p = argparse.ArgumentParser()
-    p.add_argument("keywords", help="comma-separated keywords")
-    p.add_argument("--location", required=True)
+    p.add_argument("keywords", nargs="?", default="",
+                   help="comma-separated keywords (omit when using --from-json)")
+    p.add_argument("--location", default="")
     p.add_argument("--radius", type=int, default=50)
     p.add_argument("--pages", type=int, default=2)
     p.add_argument("--count", type=int, default=30)
@@ -144,21 +194,54 @@ def main() -> None:
     p.add_argument("--title", default=None)
     p.add_argument("--delay", type=float, default=1.5,
                    help="seconds between keyword searches (avoid 429)")
+    p.add_argument("--summary", default=None,
+                   help="path to markdown file inserted at top of PDF")
+    p.add_argument("--jobs-json", default=None,
+                   help="also dump fetched jobs to this JSON path")
+    p.add_argument("--from-json", default=None,
+                   help="load jobs from this JSON instead of hitting APIs")
+    p.add_argument("--descriptions", default=None,
+                   help="JSON mapping 'source:source_id' to markdown blurb per job")
     args = p.parse_args()
 
-    kw_list = [k.strip() for k in args.keywords.split(",") if k.strip()]
-    print(f"Searching {len(kw_list)} keyword(s) in {args.location} (radius {args.radius}km)")
-    jobs = asyncio.run(
-        gather_jobs(kw_list, args.location, args.radius, args.pages, args.delay)
-    )
-    print(f"\nDeduped total: {len(jobs)} unique jobs")
+    if args.from_json:
+        raw = json.loads(Path(args.from_json).read_text())
+        jobs = [Job.model_validate(r) for r in raw]
+        print(f"Loaded {len(jobs)} jobs from {args.from_json}")
+    else:
+        kw_list = [k.strip() for k in args.keywords.split(",") if k.strip()]
+        print(f"Searching {len(kw_list)} keyword(s) in {args.location} (radius {args.radius}km)")
+        jobs = asyncio.run(
+            gather_jobs(kw_list, args.location, args.radius, args.pages, args.delay)
+        )
+        print(f"\nDeduped total: {len(jobs)} unique jobs")
 
     jobs = jobs[: args.count]
 
     output = Path(args.output)
     output.parent.mkdir(parents=True, exist_ok=True)
+
+    if args.jobs_json:
+        json_path = Path(args.jobs_json)
+        json_path.parent.mkdir(parents=True, exist_ok=True)
+        json_path.write_text(
+            json.dumps(
+                [j.model_dump(mode="json") for j in jobs],
+                indent=2, ensure_ascii=False,
+            )
+        )
+        print(f"Wrote {json_path.resolve()}")
+
+    summary_md = None
+    if args.summary:
+        summary_md = Path(args.summary).read_text()
+
+    descriptions = None
+    if args.descriptions:
+        descriptions = json.loads(Path(args.descriptions).read_text())
+
     title = args.title or f"{args.keywords} — {args.location} ({len(jobs)} jobs)"
-    build_pdf(jobs, output, title)
+    build_pdf(jobs, output, title, summary_md=summary_md, descriptions=descriptions)
     print(f"Wrote {output.resolve()} with {len(jobs)} jobs")
 
 
