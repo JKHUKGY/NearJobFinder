@@ -1,0 +1,11 @@
+{
+  "name": "NearJobFinder",
+  "postCreateCommand": "npm install -g @anthropic-ai/claude-code",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "GitHub.copilot"
+      ]
+    }
+  }
+}
